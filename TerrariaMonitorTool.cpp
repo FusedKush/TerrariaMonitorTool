@@ -577,9 +577,6 @@ int wmain ( int argc, const wchar_t* argv[] ) {
     // The `UserInterface` responsible for providing the Program's User Interface.
     UserInterface ui = { console };
 
-    // Once the `Console` has been initialized, we can register the Program Exit Handler.
-    std::atexit(programExitHandler);
-
 
     // Display message if Debug-Friendly Mode is enabled and pause
     // to give time to attach a debugger to an existing process.
@@ -624,6 +621,11 @@ int wmain ( int argc, const wchar_t* argv[] ) {
     else if (programFlags.clearProgramDataAtStart) {
         clearProgramData(ui);
     }
+
+
+    // Once the `Console` has been initialized and we're sure that the program isn't
+    // in `helpMode` or `versionMode`, we can register the Program Exit Handler.
+    std::atexit(programExitHandler);
 
 
     // The Connected Display Monitors.
