@@ -1,32 +1,14 @@
-# Prerequisites
-*.d
+# IDE, Build, & Output Directories
+.vs/
+.vscode/
+packages/
+x64/
+Terraria.*/
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
 
-# Precompiled Headers
-*.gch
-*.pch
+# IDE Files
+*.aps
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# Program Data
+/data
