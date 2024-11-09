@@ -657,12 +657,12 @@ namespace PROGRAM_NAMESPACE {
                 // Prompt the user for a custom Configuration File Path.
                 changeConfigFilePaths( promptForCustomPath(*console) );
 
-                while ( configFileDirPath && (configFileDirPath->empty() || configFilePath.length() > MAX_CUSTOM_PATH_LENGTH || !(isValidPath = std::filesystem::exists(configFilePath)) ) ) {
+                while ( configFileDirPath && (configFileDirPath->empty() || configFileDirPath->length() > MAX_CUSTOM_PATH_LENGTH || !(isValidPath = std::filesystem::exists(configFilePath)) ) ) {
                     console->clear(true);
 
                     // Only print an error if the specified path is not empty or blank.
                     if ( !configFileDirPath->empty() ) {
-                        if ( configFilePath.length() > MAX_CUSTOM_PATH_LENGTH ) {
+                        if ( configFileDirPath->length() > MAX_CUSTOM_PATH_LENGTH ) {
                             console->printfln(L"The Maximum Supported Length of the Configuration File Path is {:d} characters, including the Configuration File itself.", MAX_BASE_CUSTOM_PATH_LENGTH)
                                     .println(L"Please choose a different Terraria Configuration File or shorten the path and try again.");
                         }
