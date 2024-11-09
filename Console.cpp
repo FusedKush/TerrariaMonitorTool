@@ -608,18 +608,37 @@ namespace PROGRAM_NAMESPACE {
 		ReadConsoleW(
 			this->getBufferHandle(),
 			oStrBuf,
-			(DWORD) maxInputLength,
+			(DWORD) maxInputLength + 1UL,
 			&charsRead,
 			&inputControl
 		);
 
 		if ( charsRead > 0UL ) {
-			// Remove Trailing Newlines
-			if ( oStrBuf[charsRead - 1ULL] = L'\r' ) {
-				oStrBuf[charsRead - 1ULL] = L'\0';
-				charsRead--;
+			// Discard extra data beyond the `maxInputLength` from the Input Buffer.
+			if ( charsRead > maxInputLength && oStrBuf[charsRead - 1ULL] != L'\r' ) {
+				WinConsoleInput input[10] = {};
+				DWORD recordsRead = 0UL;
+				std::wstring tempBuf = {};
+						     tempBuf.resize(maxInputLength + 1UL);
+				DWORD tempCharsRead = 0ULL;
+
+				oStrBuf[charsRead-- - 1UL] = L'\0';
+
+				do {
+					ReadConsoleW(
+						this->getBufferHandle(),
+						tempBuf.data(),
+						(DWORD) maxInputLength + 1UL,
+						&tempCharsRead,
+						NULL
+					);
+				} while ( tempCharsRead > maxInputLength && tempBuf.back() != L'\r' );
 			}
-			
+			else {
+				// Remove Trailing Newlines
+				oStrBuf[charsRead-- - 1ULL] = L'\0';
+			}
+
 		}
 		
 		return std::optional<size_t>(charsRead);
