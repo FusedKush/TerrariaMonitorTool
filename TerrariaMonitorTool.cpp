@@ -193,15 +193,17 @@ namespace PROGRAM_NAMESPACE {
                     auto node = tempMonitorMap.extract(sourceName.viewGdiDeviceName);
                     // The Current Display Monitor being processed.
                     DisplayMonitor& displayMonitor = node.mapped();
+                    // Indicates if the Display Monitor is an Internal Device or not.
+                    bool isInternalDevice = (
+                           targetName.outputTechnology == DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
+                        || targetName.outputTechnology == DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED
+                        || targetName.outputTechnology == DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED
+                    );
 
                     displayMonitor.monitorName = (
                         targetName.monitorFriendlyDeviceName[0] != L'\0'
                             ? targetName.monitorFriendlyDeviceName
-                            : (
-                                targetName.outputTechnology == DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
-                                    ? L"Internal Display"
-                                    : L"Unnamed Display"
-                            )
+                            : ( isInternalDevice ? L"Internal Display" : L"Unnamed Display" )
                     );
                     finalMonitorList->push_back( std::move(displayMonitor) );
                 }
