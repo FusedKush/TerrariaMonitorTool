@@ -2,7 +2,7 @@
 .vs/
 .vscode/
 packages/
-x64/
+builds/
 Terraria.*/
 
 
