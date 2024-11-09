@@ -338,7 +338,7 @@ namespace PROGRAM_NAMESPACE {
 
 				if ( std::regex_search(&str[strPos], matches, TERMINAL_SEQUENCE_REGEX) ) {
 					isDetectedTerminalSequence = true;
-					termSeqEndPos = (strPos + matches.length() - 1ULL);
+					termSeqEndPos = (strPos + (size_t) matches.length() - 1ULL);
 				}
 			}
 
@@ -347,7 +347,7 @@ namespace PROGRAM_NAMESPACE {
 				short cursorYPos = (currentCursorPos.Y - this->getCurrentBufferData(true).cursorStartPos.Y);
 
 				// Populate the `contents` and `contentsCursorData` arrays if necessary.
-				while ( cursorYPos >= bufferData.contents.size() ) {
+				while ( (size_t) cursorYPos >= bufferData.contents.size() ) {
 					bufferData.contents.emplace_back();
 					bufferData.contentsCursorData.emplace_back();
 				}
@@ -362,12 +362,12 @@ namespace PROGRAM_NAMESPACE {
 
 				// Populate the `bufferDataContents` and `bufferDataContentsCursorPos`
 				// arrays if necessary.
-				while ( currentCursorPos.X > bufferDataContents.size() ) {
+				while ( (size_t) currentCursorPos.X > bufferDataContents.size() ) {
 					bufferDataContentsCursorPos.push_back(bufferDataContents.size());
 					bufferDataContents.push_back(L' ');
 				}
 				// Continue populating the `bufferDataContentsCursorPos` array if necessary.
-				while ( currentCursorPos.X > bufferDataContentsCursorPos.size() ) {
+				while ( (size_t) currentCursorPos.X > bufferDataContentsCursorPos.size() ) {
 					bufferDataContentsCursorPos.push_back(
 						!bufferDataContentsCursorPos.empty()
 							? (bufferDataContentsCursorPos.back() + 1ULL)
