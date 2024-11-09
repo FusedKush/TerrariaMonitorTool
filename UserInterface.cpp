@@ -342,6 +342,17 @@ namespace PROGRAM_NAMESPACE {
 
     std::optional<std::wstring> UserInterface::promptForConfigFilePath () const {
 
+        // The maximum permitted length for a Custom Configuration File Path,
+        // *not* including the Filename and the Path Separator between the Path and Filename.
+        size_t MAX_BASE_CUSTOM_PATH_LENGTH = MAX_PATH;
+        // The maximum permitted length for a Custom Configuration File Path,
+        // *including* the Filename and the Path Separator between the Path and Filename.
+        size_t MAX_CUSTOM_PATH_LENGTH = (
+            MAX_BASE_CUSTOM_PATH_LENGTH     // The maximum supported length in total is `MAX_BASE_CUSTOM_PATH_LENGTH`.
+            - CONFIG_FILE_NAME.length()     // Account for the Filename of the Configuration File.
+            - 1ULL                          // Account for the Path Separator between the Path and Filename.
+        );
+
         // The Configuration Path History, if any exists.
         ConfigurationPathHistory pathHistory = ConfigurationPathHistory::fetchFromFile();
 
@@ -375,14 +386,15 @@ namespace PROGRAM_NAMESPACE {
         /**
          * A lambda helper function used to prompt the user for a Custom Configuration File Path.
          * 
-         * Depends on and potentially modifies the `selectionNum` variable. 
+         * Depends on and potentially modifies the `selectionNum` variable. Also depends on
+         * the local `MAX_CUSTOM_PATH_LENGTH` constant.
          * 
          * @param console   The `Console` used to print the User Interface and prompt the user for input.
          */
-        auto promptForCustomPath = [&selectionNum]( const Console& console ) {
+        auto promptForCustomPath = [&selectionNum, MAX_CUSTOM_PATH_LENGTH]( const Console& console ) {
 
             console.print(L"Path to Configuration File: ");
-            std::optional<std::wstring> customPath = console.waitForInputData(64ULL);
+            std::optional<std::wstring> customPath = console.waitForInputData(MAX_CUSTOM_PATH_LENGTH + 1ULL);
 
             if (customPath) {
                 customPath = UTILS_NAMESPACE::trimString(*customPath);
@@ -390,7 +402,7 @@ namespace PROGRAM_NAMESPACE {
                 if (customPath->ends_with(L"\\"))
                     customPath->pop_back();
             }
-            else {   
+            else {
                 selectionNum.reset();
             }
 
@@ -645,14 +657,20 @@ namespace PROGRAM_NAMESPACE {
                 // Prompt the user for a custom Configuration File Path.
                 changeConfigFilePaths( promptForCustomPath(*console) );
 
-                while ( configFileDirPath && (configFileDirPath->empty() || !(isValidPath = std::filesystem::exists(configFilePath)) ) ) {
+                while ( configFileDirPath && (configFileDirPath->empty() || configFilePath.length() > MAX_CUSTOM_PATH_LENGTH || !(isValidPath = std::filesystem::exists(configFilePath)) ) ) {
                     console->clear(true);
 
                     // Only print an error if the specified path is not empty or blank.
-                    if ( !configFileDirPath->empty() && !isValidPath ) {
-                        console->printfln(L"The Terraria Configuration File ({:s}) could not be found in the specified location.", CONFIG_FILE_NAME)
-                                .println(L"Check the specified path to the Terraria Configuration File and try again.")
-                                .println();
+                    if ( !configFileDirPath->empty() ) {
+                        if ( configFilePath.length() > MAX_CUSTOM_PATH_LENGTH ) {
+                            console->printfln(L"The Maximum Supported Length of the Configuration File Path is {:d} characters, including the Configuration File itself.", MAX_BASE_CUSTOM_PATH_LENGTH)
+                                    .println(L"Please choose a different Terraria Configuration File or shorten the path and try again.");
+                        }
+                        else if ( !isValidPath ) {
+                            console->printfln(L"The Terraria Configuration File ({:s}) could not be found in the specified location.", CONFIG_FILE_NAME)
+                                    .println(L"Check the specified path to the Terraria Configuration File and try again.")
+                                    .println();
+                        }
                     }
 
                     // Continue prompting the user for a custom Configuration File Path
