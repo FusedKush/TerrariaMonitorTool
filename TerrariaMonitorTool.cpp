@@ -194,7 +194,15 @@ namespace PROGRAM_NAMESPACE {
                     // The Current Display Monitor being processed.
                     DisplayMonitor& displayMonitor = node.mapped();
 
-                    displayMonitor.monitorName = targetName.monitorFriendlyDeviceName;
+                    displayMonitor.monitorName = (
+                        targetName.monitorFriendlyDeviceName[0] != L'\0'
+                            ? targetName.monitorFriendlyDeviceName
+                            : (
+                                targetName.outputTechnology == DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
+                                    ? L"Internal Display"
+                                    : L"Unnamed Display"
+                            )
+                    );
                     finalMonitorList->push_back( std::move(displayMonitor) );
                 }
                 // Failed to retrieve information about the Current Display Monitor from the Windows API.
